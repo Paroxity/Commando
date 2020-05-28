@@ -169,7 +169,7 @@ trait ArgumentableTrait {
 		// up to my testing this occurs when BaseCommand::ERR_NO_ARGUMENTS and BaseCommand::ERR_TOO_MANY_ARGUMENTS are given as errors
 		// this only (as far as my testing) happens when command accepts arguments (e.g. a subcommand) but the user supplied invalid argument
 		// also the error code remains as shown due to the way they are passed
-		// have a better wat? pr please :)
+		// have a better way? pr please :)
 		if(
 			count($return["errors"]) === 2 &&
 			$return["errors"][0]["code"] === BaseCommand::ERR_NO_ARGUMENTS &&
@@ -186,7 +186,7 @@ trait ArgumentableTrait {
 		return $return;
 	}
 
-	public function generateUsageMessage(string $parent = "", bool $includeSubCommands = true): string {
+	public function generateUsageMessage(string $parent = ""): string {
 		$name = $parent . (empty($parent) ? "" : " ") . $this->getName();
 		$msg = "/" . $name . " ";
 		$args = [];
@@ -207,12 +207,9 @@ trait ArgumentableTrait {
 			}
 		}
 		$msg .= implode(" ", $args);
-
-		if($includeSubCommands){
-			foreach($this->subCommands as $label => $subCommand){
-				if($label === $subCommand->getName()){
-					$msg .= "\n - " . $subCommand->generateUsageMessage($name);
-				}
+		foreach($this->subCommands as $label => $subCommand){
+			if($label === $subCommand->getName()){
+				$msg .= "\n - " . $subCommand->generateUsageMessage($name);
 			}
 		}
 

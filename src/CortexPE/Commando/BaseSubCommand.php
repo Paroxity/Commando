@@ -36,8 +36,8 @@ abstract class BaseSubCommand extends BaseCommand{
 	/** @var BaseCommand */
 	protected $parent;
 
-	public function __construct(PluginBase $plugin, string $name, string $description = "", array $aliases = []){
-		parent::__construct($plugin, $name, $description, $aliases);
+	public function __construct(string $name, string $description = "", array $aliases = []){
+		parent::__construct($this->getParent()->getOwningPlugin(), $name, $description, $aliases);
 
 		$this->usageMessage = "";
 	}

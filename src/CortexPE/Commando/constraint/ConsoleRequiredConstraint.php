@@ -30,18 +30,26 @@ declare(strict_types=1);
 namespace CortexPE\Commando\constraint;
 
 
+use CortexPE\Commando\IRunnable;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 
 class ConsoleRequiredConstraint extends BaseConstraint {
 
+    public function __construct(
+        IRunnable $context,
+        private string $message = TextFormat::RED . "This command must be executed from a server console." // f*ck off grammar police
+    ) {
+        parent::__construct($context);
+    }
+
     public function test(CommandSender $sender, string $aliasUsed, array $args): bool {
         return $this->isVisibleTo($sender);
     }
 
     public function onFailure(CommandSender $sender, string $aliasUsed, array $args): void {
-        $sender->sendMessage(TextFormat::RED . "This command must be executed from a server console."); // f*ck off grammar police
+        $sender->sendMessage($this->message);
     }
 
     public function isVisibleTo(CommandSender $sender): bool {

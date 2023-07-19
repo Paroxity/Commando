@@ -193,6 +193,7 @@ trait ArgumentableTrait{
 		if ($this instanceof BaseSubCommand) {
 			$parentNames = "";
 			
+			$parent = $this->getParent();
 			while($parent instanceof BaseSubCommand) {
 				$parentNames = $parent->getName() . $parentNames;
 				$parent = $parent->getParent();

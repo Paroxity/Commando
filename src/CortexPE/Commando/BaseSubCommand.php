@@ -29,18 +29,11 @@ declare(strict_types=1);
 
 namespace CortexPE\Commando;
 
-use pocketmine\plugin\PluginBase;
 use function trim;
 
 abstract class BaseSubCommand extends BaseCommand{
 	/** @var BaseCommand */
 	protected BaseCommand $parent;
-
-	public function __construct(PluginBase $plugin, string $name, string $description = "", array $aliases = []){
-		parent::__construct($plugin, $name, $description, $aliases);
-
-		$this->usageMessage = "";
-	}
 
 	public function getParent(): BaseCommand {
 		return $this->parent;
@@ -53,25 +46,18 @@ abstract class BaseSubCommand extends BaseCommand{
 	 */
 	public function setParent(BaseCommand $parent): void {
 		$this->parent = $parent;
-	}
 
-	public function getUsage(): string{
-		if(empty($this->usageMessage)){
-			$parent = $this->parent;
-			$parentNames = "";
+		$parentNames = "";
 
-			while($parent instanceof BaseSubCommand) {
-				$parentNames = $parent->getName() . $parentNames;
-				$parent = $parent->getParent();
-			}
-
-			if($parent instanceof BaseCommand){
-				$parentNames = $parent->getName() . " " . $parentNames;
-			}
-
-			$this->usageMessage = $this->generateUsageMessage(trim($parentNames));
+		while($parent instanceof BaseSubCommand) {
+			$parentNames = $parent->getName() . $parentNames;
+			$parent = $parent->getParent();
 		}
 
-		return $this->usageMessage;
+		if($parent instanceof BaseCommand){
+			$parentNames = $parent->getName() . " " . $parentNames;
+		}
+
+		$this->usageMessage = $this->generateUsageMessage(trim($parentNames));
 	}
 }

@@ -29,7 +29,6 @@ declare(strict_types=1);
 
 namespace CortexPE\Commando\traits;
 
-
 use CortexPE\Commando\args\BaseArgument;
 use CortexPE\Commando\args\TextArgument;
 use CortexPE\Commando\BaseCommand;
@@ -43,6 +42,7 @@ use function is_array;
 use function rtrim;
 use function trim;
 use function usort;
+use const PHP_INT_MAX;
 
 trait ArgumentableTrait{
 	/** @var BaseArgument[][] */
@@ -53,12 +53,9 @@ trait ArgumentableTrait{
 	/**
 	 * This is where all the arguments, permissions, sub-commands, etc would be registered
 	 */
-	abstract protected function prepare() : void;
+	abstract protected function prepare(): void;
 
 	/**
-	 * @param int          $position
-	 * @param BaseArgument $argument
-	 *
 	 * @throws ArgumentOrderException
 	 */
 	public function registerArgument(int $position, BaseArgument $argument): void {
@@ -139,7 +136,7 @@ trait ArgumentableTrait{
 					$expectedArgs = $this->argumentList[$offset];
 					$expected = "";
 					foreach($expectedArgs as $expectedArg){
-						$expected .=  $expectedArg->getTypeName() . "|";
+						$expected .= $expectedArg->getTypeName() . "|";
 					}
 
 					$return["errors"][] = [
@@ -190,7 +187,7 @@ trait ArgumentableTrait{
 
 	public function generateUsageMessage(string $parent = ""): string {
 		$name = $parent . (empty($parent) ? "" : " ") . $this->getName();
-		$msg = TextFormat::RED .  "/" . $name;
+		$msg = TextFormat::RED . "/" . $name;
 		$args = [];
 		foreach($this->argumentList as $arguments){
 			$hasOptional = false;
@@ -208,7 +205,7 @@ trait ArgumentableTrait{
 				$args[] = "<" . $names . ">";
 			}
 		}
-		$msg .= ((empty($args)) ? "" : " ") .  implode(TextFormat::RED . " ", $args) . ": " . $this->getDescription();
+		$msg .= ((empty($args)) ? "" : " ") . implode(TextFormat::RED . " ", $args) . ": " . $this->getDescription();
 		foreach($this->subCommands as $label => $subCommand){
 			if($label === $subCommand->getName()){
 				$msg .= "\n - " . $subCommand->generateUsageMessage($name);

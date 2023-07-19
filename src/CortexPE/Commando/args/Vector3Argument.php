@@ -29,7 +29,6 @@ declare(strict_types=1);
 
 namespace CortexPE\Commando\args;
 
-
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
@@ -40,6 +39,7 @@ use function preg_match;
 use function substr;
 
 class Vector3Argument extends BaseArgument {
+
 	public function getNetworkType(): int {
 		return AvailableCommandsPacket::ARG_TYPE_POSITION;
 	}
@@ -64,10 +64,10 @@ class Vector3Argument extends BaseArgument {
 	}
 
 	public function isValidCoordinate(string $coordinate, bool $locatable): bool {
-		return (bool)preg_match("/^(?:" . ($locatable ? "(\\?:~-|~\+)?" : "") . "-?(?:\d+|\d*\.\d+))" . ($locatable ? "|~" : "") . "$/", $coordinate);
+		return (bool) preg_match("/^(?:" . ($locatable ? "(\\?:~-|~\+)?" : "") . "-?(?:\d+|\d*\.\d+))" . ($locatable ? "|~" : "") . "$/", $coordinate);
 	}
 
-	public function parse(string $argument, CommandSender $sender) : Vector3{
+	public function parse(string $argument, CommandSender $sender): Vector3 {
 		$coords = explode(" ", $argument);
 		$vals = [];
 		foreach($coords as $k => $coord){
@@ -85,7 +85,7 @@ class Vector3Argument extends BaseArgument {
 					2 => $position->z,
 				};
 			}
-			$vals[] = (float)$coord + (float)$offset;
+			$vals[] = (float) $coord + (float) $offset;
 		}
 		return new Vector3(...$vals);
 	}

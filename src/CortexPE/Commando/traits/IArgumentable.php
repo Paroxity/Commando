@@ -29,11 +29,11 @@ declare(strict_types=1);
 
 namespace CortexPE\Commando\traits;
 
-
 use CortexPE\Commando\args\BaseArgument;
 use pocketmine\command\CommandSender;
 
 interface IArgumentable {
+	
 	public function generateUsageMessage(string $parent = ""): string;
 	public function hasArguments(): bool;
 

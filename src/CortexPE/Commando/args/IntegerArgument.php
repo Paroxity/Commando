@@ -29,7 +29,6 @@ declare(strict_types=1);
 
 namespace CortexPE\Commando\args;
 
-
 use pocketmine\command\CommandSender;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use function preg_match;
@@ -44,10 +43,10 @@ class IntegerArgument extends BaseArgument {
 	}
 
 	public function canParse(string $testString, CommandSender $sender): bool {
-		return (bool)preg_match("/^-?(?:\d+)$/", $testString);
+		return (bool) preg_match("/^-?(?:\d+)$/", $testString);
 	}
 
-	public function parse(string $argument, CommandSender $sender) : int{
+	public function parse(string $argument, CommandSender $sender): int {
 		return (int) $argument;
 	}
 }

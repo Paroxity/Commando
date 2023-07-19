@@ -29,11 +29,12 @@ declare(strict_types=1);
 
 namespace CortexPE\Commando;
 
+use pocketmine\lang\Translatable;
 use pocketmine\plugin\PluginBase;
 use function trim;
 
-abstract class BaseSubCommand extends BaseCommand{
-	/** @var BaseCommand */
+abstract class BaseSubCommand extends BaseCommand {
+
 	protected BaseCommand $parent;
 
 	public function __construct(PluginBase $plugin, string $name, string $description = "", array $aliases = []){
@@ -47,15 +48,13 @@ abstract class BaseSubCommand extends BaseCommand{
 	}
 
 	/**
-	 * @param BaseCommand $parent
-	 *
 	 * @internal Used to pass the parent context from the parent command
 	 */
 	public function setParent(BaseCommand $parent): void {
 		$this->parent = $parent;
 	}
 
-	public function getUsage(): string{
+	public function getUsage(): Translatable|string {
 		if(empty($this->usageMessage)){
 			$parent = $this->parent;
 			$parentNames = "";

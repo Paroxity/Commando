@@ -36,6 +36,7 @@ use CortexPE\Commando\traits\IArgumentable;
 use InvalidArgumentException;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\lang\Translatable;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\utils\TextFormat;
@@ -56,7 +57,7 @@ abstract class BaseCommand extends Command implements IArgumentable, IRunnable, 
 	public const ERR_INVALID_ARGUMENTS = 0x05;
 
 	/** @var string[] */
-	protected $errorMessages = [
+	protected array $errorMessages = [
 		self::ERR_INVALID_ARG_VALUE => TextFormat::RED . "Invalid value '{value}' for argument #{position}. Expecting: {expected}.",
 		self::ERR_TOO_MANY_ARGUMENTS => TextFormat::RED . "Too many arguments given.",
 		self::ERR_INSUFFICIENT_ARGUMENTS => TextFormat::RED . "Insufficient number of arguments given.",
@@ -64,7 +65,6 @@ abstract class BaseCommand extends Command implements IArgumentable, IRunnable, 
 		self::ERR_INVALID_ARGUMENTS => TextFormat::RED . "Invalid arguments supplied.",
 	];
 
-	/** @var CommandSender */
 	protected CommandSender $currentSender;
 
 	/** @var BaseSubCommand[] */
@@ -73,7 +73,6 @@ abstract class BaseCommand extends Command implements IArgumentable, IRunnable, 
 	/** @var BaseConstraint[] */
 	private array $constraints = [];
 
-	/** @var Plugin */
 	protected Plugin $plugin;
 
 	public function __construct(
@@ -124,14 +123,8 @@ abstract class BaseCommand extends Command implements IArgumentable, IRunnable, 
 			$cmd->onRun($sender, $commandLabel, $passArgs);
 		}
 	}
-
-	/**
-	 * @param ArgumentableTrait $ctx
-	 * @param array             $args
-	 *
-	 * @return array|null
-	 */
-	private function attemptArgumentParsing($ctx, array $args): ?array {
+	
+	private function attemptArgumentParsing(ArgumentableTrait $ctx, array $args): ?array {
 		$dat = $ctx->parseArguments($args, $this->currentSender);
 		if(!empty(($errors = $dat["errors"]))) {
 			foreach($errors as $error) {
@@ -151,7 +144,7 @@ abstract class BaseCommand extends Command implements IArgumentable, IRunnable, 
 	}
 
 	public function sendError(int $errorCode, array $args = []): void {
-		$str = (string)$this->errorMessages[$errorCode];
+		$str = (string) $this->errorMessages[$errorCode];
 		foreach($args as $item => $value) {
 			$str = str_replace('{' . $item . '}', (string) $value, $str);
 		}
@@ -193,7 +186,7 @@ abstract class BaseCommand extends Command implements IArgumentable, IRunnable, 
 		return $this->subCommands;
 	}
 
-	public function addConstraint(BaseConstraint $constraint) : void {
+	public function addConstraint(BaseConstraint $constraint): void {
 		$this->constraints[] = $constraint;
 	}
 
@@ -204,7 +197,7 @@ abstract class BaseCommand extends Command implements IArgumentable, IRunnable, 
 		return $this->constraints;
 	}
 
-	public function getUsageMessage(): string {
+	public function getUsageMessage(): Translatable|string {
 		return $this->getUsage();
 	}
 

@@ -44,14 +44,15 @@ use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use ReflectionClass;
-use function array_unshift;
+use function array_map;
+use function array_product;
 use function count;
+use function spl_object_id;
 
 class PacketHooker implements Listener {
-	/** @var bool */
+
 	private static bool $isRegistered = false;
 
-	/** @var bool */
 	private static bool $isIntercepting = false;
 
 	public static function isRegistered(): bool {
@@ -63,7 +64,7 @@ class PacketHooker implements Listener {
 			throw new HookAlreadyRegistered("Event listener is already registered by another plugin.");
 		}
 		$interceptor = SimplePacketHandler::createInterceptor($registrant, EventPriority::HIGHEST, false);
-		$interceptor->interceptOutgoing(function(AvailableCommandsPacket $pk, NetworkSession $target) : bool{
+		$interceptor->interceptOutgoing(function(AvailableCommandsPacket $pk, NetworkSession $target): bool {
 			if(self::$isIntercepting)return true;
 			$p = $target->getPlayer();
 			foreach($pk->commandData as $commandName => $commandData) {
@@ -83,14 +84,11 @@ class PacketHooker implements Listener {
 			self::$isIntercepting = false;
 			return false;
 		});
-		
+
 		self::$isRegistered = true;
 	}
 
 	/**
-	 * @param CommandSender $cs
-	 * @param BaseCommand $command
-	 *
 	 * @return CommandOverload[]
 	 */
 	private static function generateOverloads(CommandSender $cs, BaseCommand $command): array {
@@ -129,8 +127,6 @@ class PacketHooker implements Listener {
 	}
 
 	/**
-	 * @param IArgumentable $argumentable
-	 *
 	 * @return CommandOverload[]
 	 */
 	private static function generateOverloadList(IArgumentable $argumentable): array {
@@ -145,8 +141,8 @@ class PacketHooker implements Listener {
 			/** @var CommandParameter[] $set */
 			$set = [];
 			foreach($indexes as $k => $index){
-			   	$param = $set[$k] = clone $input[$k][$index]->getNetworkParameterData();
-			
+				$param = $set[$k] = clone $input[$k][$index]->getNetworkParameterData();
+
 				if (isset($param->enum) && $param->enum instanceof CommandEnum) {
 					$refClass = new ReflectionClass(CommandEnum::class);
 					$refProp = $refClass->getProperty("enumName");
@@ -154,7 +150,7 @@ class PacketHooker implements Listener {
 					$refProp->setValue($param->enum, "enum#" . spl_object_id($param->enum));
 				}
 			}
-			$combinations[] =  new CommandOverload(false, $set);
+			$combinations[] = new CommandOverload(false, $set);
 
 			foreach($indexes as $k => $v){
 				$indexes[$k]++;

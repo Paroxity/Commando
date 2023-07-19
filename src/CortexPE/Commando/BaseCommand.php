@@ -36,6 +36,7 @@ use CortexPE\Commando\traits\IArgumentable;
 use InvalidArgumentException;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\lang\Translatable;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\utils\TextFormat;
@@ -204,7 +205,7 @@ abstract class BaseCommand extends Command implements IArgumentable, IRunnable, 
 		return $this->constraints;
 	}
 
-	public function getUsageMessage(): string {
+	public function getUsageMessage(): Translatable|string {
 		return $this->getUsage();
 	}
 

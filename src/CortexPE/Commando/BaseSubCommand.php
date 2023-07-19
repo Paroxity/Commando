@@ -29,8 +29,6 @@ declare(strict_types=1);
 
 namespace CortexPE\Commando;
 
-use function trim;
-
 abstract class BaseSubCommand extends BaseCommand{
 	/** @var BaseCommand */
 	protected BaseCommand $parent;
@@ -46,18 +44,5 @@ abstract class BaseSubCommand extends BaseCommand{
 	 */
 	public function setParent(BaseCommand $parent): void {
 		$this->parent = $parent;
-
-		$parentNames = "";
-
-		while($parent instanceof BaseSubCommand) {
-			$parentNames = $parent->getName() . $parentNames;
-			$parent = $parent->getParent();
-		}
-
-		if($parent instanceof BaseCommand){
-			$parentNames = $parent->getName() . " " . $parentNames;
-		}
-
-		$this->usageMessage = $this->generateUsageMessage(trim($parentNames));
 	}
 }

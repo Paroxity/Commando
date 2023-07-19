@@ -188,8 +188,23 @@ trait ArgumentableTrait{
 		return $return;
 	}
 
-	public function generateUsageMessage(string $parent = ""): string {
-		$name = $parent . (empty($parent) ? "" : " ") . $this->getName();
+	public function generateUsageMessage(): string {
+		$name = $this->getName();
+		if ($this instanceof BaseSubCommand) {
+			$parentNames = "";
+			
+			while($parent instanceof BaseSubCommand) {
+				$parentNames = $parent->getName() . $parentNames;
+				$parent = $parent->getParent();
+			}
+
+			if($parent instanceof BaseCommand){
+				$parentNames = $parent->getName() . " " . $parentNames;
+			}
+
+			$name = trim($parentNames) . " " . $name;
+		}
+
 		$msg = TextFormat::RED .  "/" . $name;
 		$args = [];
 		foreach($this->argumentList as $arguments){

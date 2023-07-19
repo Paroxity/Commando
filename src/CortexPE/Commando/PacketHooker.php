@@ -43,7 +43,6 @@ use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
-use ReflectionClass;
 use function array_map;
 use function array_product;
 use function count;
@@ -63,6 +62,7 @@ class PacketHooker implements Listener {
 		if(self::$isRegistered) {
 			throw new HookAlreadyRegistered("Event listener is already registered by another plugin.");
 		}
+		
 		$interceptor = SimplePacketHandler::createInterceptor($registrant, EventPriority::HIGHEST, false);
 		$interceptor->interceptOutgoing(function(AvailableCommandsPacket $pk, NetworkSession $target): bool {
 			if(self::$isIntercepting)return true;
@@ -144,7 +144,7 @@ class PacketHooker implements Listener {
 				$param = $set[$k] = clone $input[$k][$index]->getNetworkParameterData();
 
 				if (isset($param->enum) && $param->enum instanceof CommandEnum) {
-					$refClass = new ReflectionClass(CommandEnum::class);
+					$refClass = new \ReflectionClass(CommandEnum::class);
 					$refProp = $refClass->getProperty("enumName");
 					$refProp->setAccessible(true);
 					$refProp->setValue($param->enum, "enum#" . spl_object_id($param->enum));

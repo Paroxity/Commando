@@ -44,7 +44,8 @@ use function trim;
 use function usort;
 use const PHP_INT_MAX;
 
-trait ArgumentableTrait{
+trait ArgumentableTrait {
+	
 	/** @var BaseArgument[][] */
 	private array $argumentList = []; // [argumentPosition => [...possible BaseArgument(s)]]
 	/** @var bool[] */

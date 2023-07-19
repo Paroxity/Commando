@@ -34,7 +34,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 
 class InGameRequiredConstraint extends BaseConstraint {
-    
+	
 	public function test(CommandSender $sender, string $aliasUsed, array $args): bool {
 		return $this->isVisibleTo($sender);
 	}

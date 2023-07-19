@@ -30,6 +30,7 @@ declare(strict_types=1);
 namespace CortexPE\Commando;
 
 use CortexPE\Commando\constraint\BaseConstraint;
+use pocketmine\command\CommandMap;
 use pocketmine\lang\Translatable;
 
 /**

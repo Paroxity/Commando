@@ -34,7 +34,7 @@ use function trim;
 
 abstract class BaseSubCommand extends BaseCommand{
 	/** @var BaseCommand */
-	protected $parent;
+	protected BaseCommand $parent;
 
 	public function __construct(PluginBase $plugin, string $name, string $description = "", array $aliases = []){
 		parent::__construct($plugin, $name, $description, $aliases);
@@ -42,7 +42,7 @@ abstract class BaseSubCommand extends BaseCommand{
 		$this->usageMessage = "";
 	}
 
-	public function getParent(): ?BaseCommand {
+	public function getParent(): BaseCommand {
 		return $this->parent;
 	}
 

@@ -29,7 +29,6 @@ declare(strict_types=1);
 
 namespace CortexPE\Commando;
 
-
 use CortexPE\Commando\exception\HookAlreadyRegistered;
 use CortexPE\Commando\store\SoftEnumStore;
 use CortexPE\Commando\traits\IArgumentable;
@@ -40,18 +39,20 @@ use pocketmine\event\Listener;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use ReflectionClass;
 use function array_unshift;
 use function count;
 
 class PacketHooker implements Listener {
 	/** @var bool */
-	private static $isRegistered = false;
+	private static bool $isRegistered = false;
 
 	/** @var bool */
-	private static $isIntercepting = false;
+	private static bool $isIntercepting = false;
 
 	public static function isRegistered(): bool {
 		return self::$isRegistered;
@@ -82,15 +83,17 @@ class PacketHooker implements Listener {
 			self::$isIntercepting = false;
 			return false;
 		});
+		
+		self::$isRegistered = true;
 	}
 
 	/**
 	 * @param CommandSender $cs
 	 * @param BaseCommand $command
 	 *
-	 * @return CommandParameter[][]
+	 * @return CommandOverload[]
 	 */
-	public static function generateOverloads(CommandSender $cs, BaseCommand $command): array {
+	private static function generateOverloads(CommandSender $cs, BaseCommand $command): array {
 		$overloads = [];
 
 		foreach($command->getSubCommands() as $label => $subCommand) {
@@ -111,11 +114,10 @@ class PacketHooker implements Listener {
 			$overloadList = self::generateOverloads($cs, $subCommand);
 			if(!empty($overloadList)){
 				foreach($overloadList as $overload) {
-					array_unshift($overload, $scParam);
-					$overloads[] = $overload;
+					$overloads[] = new CommandOverload(false, [$scParam, ...$overload->getParameters()]);
 				}
 			} else {
-				$overloads[] = [$scParam];
+				$overloads[] = new CommandOverload(false, [$scParam]);
 			}
 		}
 
@@ -129,7 +131,7 @@ class PacketHooker implements Listener {
 	/**
 	 * @param IArgumentable $argumentable
 	 *
-	 * @return CommandParameter[][]
+	 * @return CommandOverload[]
 	 */
 	private static function generateOverloadList(IArgumentable $argumentable): array {
 		$input = $argumentable->getArgumentList();
@@ -139,24 +141,31 @@ class PacketHooker implements Listener {
 		foreach($input as $k => $charList){
 			$indexes[$k] = 0;
 		}
-        do {
-            /** @var CommandParameter[] $set */
-            $set = [];
-            foreach($indexes as $k => $index){
-                $set[$k] = clone $input[$k][$index]->getNetworkParameterData();
-            }
-            $combinations[] = $set;
+		do {
+			/** @var CommandParameter[] $set */
+			$set = [];
+			foreach($indexes as $k => $index){
+			   	$param = $set[$k] = clone $input[$k][$index]->getNetworkParameterData();
+			
+				if (isset($param->enum) && $param->enum instanceof CommandEnum) {
+					$refClass = new ReflectionClass(CommandEnum::class);
+					$refProp = $refClass->getProperty("enumName");
+					$refProp->setAccessible(true);
+					$refProp->setValue($param->enum, "enum#" . spl_object_id($param->enum));
+				}
+			}
+			$combinations[] =  new CommandOverload(false, $set);
 
-            foreach($indexes as $k => $v){
-                $indexes[$k]++;
-                $lim = count($input[$k]);
-                if($indexes[$k] >= $lim){
-                    $indexes[$k] = 0;
-                    continue;
-                }
-                break;
-            }
-        } while(count($combinations) !== $outputLength);
+			foreach($indexes as $k => $v){
+				$indexes[$k]++;
+				$lim = count($input[$k]);
+				if($indexes[$k] >= $lim){
+					$indexes[$k] = 0;
+					continue;
+				}
+				break;
+			}
+		} while(count($combinations) !== $outputLength);
 
 		return $combinations;
 	}

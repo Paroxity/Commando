@@ -28,7 +28,7 @@ class TargetPlayerArgument extends BaseArgument{
 		return (bool) preg_match("/^(?!rcon|console)[a-zA-Z0-9_ ]{1,16}$/i", $testString);
 	}
 
-	public function parse(string $argument, CommandSender $sender){
+	public function parse(string $argument, CommandSender $sender): string{
 		return strtolower($argument);
 	}
 }

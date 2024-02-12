@@ -96,6 +96,7 @@ trait ArgumentableTrait{
 			];
 		}
 		$offset = 0;
+		$argOffset = 0;
 		if(count($rawArgs) > 0) {
 			foreach($this->argumentList as $pos => $possibleArguments) {
 				// try the one that spans more first... before the others
@@ -128,6 +129,7 @@ trait ArgumentableTrait{
 							$required--;
 						}
 						$offset += $len;
+						++$argOffset;
 						$parsed = true;
 						break;
 					}
@@ -136,7 +138,7 @@ trait ArgumentableTrait{
 					}
 				}
 				if(!$parsed && !($optional && empty($arg))) { // we tried every other possible argument type, none was satisfied
-					$expectedArgs = $this->argumentList[$offset];
+					$expectedArgs = $this->argumentList[$argOffset];
 					$expected = "";
 					foreach($expectedArgs as $expectedArg){
 						$expected .=  $expectedArg->getTypeName() . "|";

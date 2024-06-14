@@ -3,6 +3,10 @@
     "description": "A Command Framework virion for PocketMine-MP ",
     "type": "library",
     "license": "LGPL-3.0-only",
+    "require": {
+        "pocketmine/pocketmine-mp": "^5.0",
+        "muqsit/simple-packet-handler": "^0.1.4"
+    },
     "autoload": {
         "psr-4": {"CortexPE\\Commando\\": ["src/CortexPE/Commando/"]}
     },
